@@ -1,6 +1,6 @@
 @file:Suppress("OPT_IN_USAGE")
 
-package com.example.plugin.utils
+package org.limao996.alice_bookstore.utils
 
 import cxhttp.converter.CxHttpConverter
 import cxhttp.response.CxHttpResult

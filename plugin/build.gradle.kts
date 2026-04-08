@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plugin"
+    namespace = "org.limao996.alice_bookstore"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.plugin"
+        applicationId = "org.limao996.alice_bookstore"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -58,12 +58,16 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.androidx.runtime)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.foundation.layout)
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material3)
+
+    // 宿主内置依赖
+    compileOnly(libs.kotlinx.coroutines.core)
+    compileOnly(libs.androidx.runtime)
+    compileOnly(libs.androidx.navigation.runtime.ktx)
+    compileOnly(libs.androidx.foundation.layout)
+    compileOnly(platform(libs.compose.bom))
+    compileOnly(libs.compose.material3)
+
+    // 插件依赖
     implementation(libs.kotlinx.serialization.cbor)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.cxhttp)
