@@ -14,7 +14,7 @@ suspend fun AliceBookstoreBookInformation(
 
     val detailBox = soup?.selectFirst(".detail-box")
 
-    val title = detailBox?.selectFirst(".top .xs-title")?.text() ?: "暂无标题"
+    val title = detailBox?.selectFirst(".top .xs-title")?.text()?.removeSuffix("全文阅读") ?: "暂无标题"
     val description = soup?.selectFirst(".jianjie")?.text() ?: "暂无简介"
     val coverDoc = detailBox?.selectFirst(".imgbox img")
     val coverUrl = (coverDoc?.attr("src") ?: "https://img.321cdn.com/img/01.png").toUri()

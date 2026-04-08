@@ -8,10 +8,13 @@ import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.search.SearchType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.isActive
+import kotlinx.coroutines.isActive
 import org.jsoup.select.Evaluator
 import org.limao996.alice_bookstore.utils.get
 import org.limao996.alice_bookstore.utils.infoLog
@@ -33,7 +36,7 @@ object AliceBookstoreSearchProvider : SearchProvider {
     ): Flow<SearchResult> = flow {
         val q = URLEncoder.encode(keyword, "utf-8")
         var currentPage = 0
-        while (true) {
+        while (currentCoroutineContext().isActive) {
             val soup = get("$HOST/search.html?q=$q&p=${++currentPage}&f=${searchType.type}")
             if (soup == null) {
                 emit(SearchResult.Error("网页请求失败！"))
@@ -48,7 +51,9 @@ object AliceBookstoreSearchProvider : SearchProvider {
             val items = soup.selectFirst(".list-group")?.children() ?: break
             for (item in items) {
                 val titleLink = item.selectFirst("h5 a")
-                val title = titleLink?.text()?.replace(Regex("^\\d+\\.\\s*"), "") ?: "暂无标题"
+                val title =
+                    titleLink?.text()?.replace(Regex("^\\d+\\.\\s*"), "")?.removeSuffix("全文阅读")
+                        ?: "暂无标题"
                 val id = titleLink?.attr("href")?.removePrefix("/novel/")?.removeSuffix(".html")
                     ?: continue
 
@@ -66,6 +71,7 @@ object AliceBookstoreSearchProvider : SearchProvider {
                 val infoText = item.selectFirst(".mb-1")?.text() ?: ""
                 val wordCount =
                     Regex("字数：(\\S+)").find(infoText)?.groupValues?.get(1)?.removeSuffix("万")
+                        ?.replace(",", "")
                         ?.toFloatOrNull()?.times(10000)?.toInt() ?: 0
                 val timeText = item.child(4)?.text() ?: ""
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
