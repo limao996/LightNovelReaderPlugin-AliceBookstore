@@ -35,7 +35,7 @@ import org.limao996.alice_bookstore.utils.infoLog
 
 
 // 数据源主机地址
- const val HOST = "https://www.alicesw.com"
+const val HOST = "https://www.alicesw.com"
 
 @Suppress("unused")
 @Plugin(

@@ -20,7 +20,14 @@ class CustomExploreTapPageDataSource(
 
         val categoryFlows = categoryRange.map { category ->
             flow {
-                emit(ExploreBooksRow(title = category.name, bookList = emptyList()))
+                emit(
+                    ExploreBooksRow(
+                        title = category.name,
+                        bookList = emptyList(),
+                        expandable = true,
+                        expandedPageDataSourceId = category.name
+                    )
+                )
                 val bookList = loadSimpleBookList(category)
                 emit(
                     ExploreBooksRow(

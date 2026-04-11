@@ -6,11 +6,13 @@ import androidx.navigation.Navigator
 import cxhttp.CxHttp
 import cxhttp.CxHttpHelper
 import io.nightfish.lightnovelreader.api.book.BookRepositoryApi
+import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.book.LocalBookDataSourceApi
 import io.nightfish.lightnovelreader.api.bookshelf.BookshelfRepositoryApi
 import io.nightfish.lightnovelreader.api.text.TextProcessingRepositoryApi
 import io.nightfish.lightnovelreader.api.userdata.UserDataDaoApi
 import io.nightfish.lightnovelreader.api.userdata.UserDataRepositoryApi
+import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebBookDataSourceManagerApi
 import io.nightfish.lightnovelreader.api.web.WebDataSource
@@ -59,6 +61,23 @@ class AliceBookstoreWebDataSource(
         }.await().isSuccessful
     }
 
+    // 初始化缓存机制
+    override val cache = Cache(
+        timeout = 2 * 60 * 60 * 1000
+    )
+
+    private inline fun <reified T : CanBeEmpty> ifCache(id: String, block: () -> T): T {
+        val cacheData = cache.getCache<T>(id.hashCode())
+        if (cacheData == null) {
+            val data = block.invoke()
+            if (data.isEmpty()) return data
+            cache.cache(id.hashCode(), data)
+            return data
+        }
+        return cacheData
+    }
+
+
     // 初始化
     override fun onLoad() {
         // 初始化 CxHttp 组件
@@ -80,11 +99,14 @@ class AliceBookstoreWebDataSource(
 
     override val searchProvider = AliceBookstoreSearchProvider
 
-    override suspend fun getBookInformation(id: String) = AliceBookstoreBookInformation(id)
+    override suspend fun getBookInformation(id: String) =
+        ifCache(id) { AliceBookstoreBookInformation(id) }
 
-    override suspend fun getBookVolumes(id: String) = AliceBookstoreBookVolumes(id)
+    override suspend fun getBookVolumes(id: String) = ifCache(id) { AliceBookstoreBookVolumes(id) }
 
     override suspend fun getChapterContent(chapterId: String, bookId: String) =
-        AliceBookstoreChapterContent(chapterId, bookId, localBookDataSourceApi)
+        ifCache(chapterId + bookId) {
+            AliceBookstoreChapterContent(chapterId, bookId, localBookDataSourceApi)
+        }
 
 }

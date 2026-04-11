@@ -5,6 +5,7 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.MutableBookInformation
 import io.nightfish.lightnovelreader.api.book.WordCount
 import org.limao996.alice_bookstore.utils.get
+import org.limao996.alice_bookstore.utils.infoLog
 import java.time.LocalDateTime
 
 suspend fun AliceBookstoreBookInformation(
@@ -14,7 +15,8 @@ suspend fun AliceBookstoreBookInformation(
 
     val detailBox = soup?.selectFirst(".detail-box")
 
-    val title = detailBox?.selectFirst(".top .xs-title")?.text()?.removeSuffix("全文阅读") ?: "暂无标题"
+    val title =
+        detailBox?.selectFirst(".top .xs-title")?.text()?.removeSuffix("全文阅读") ?: "暂无标题"
     val description = soup?.selectFirst(".jianjie")?.text() ?: "暂无简介"
     val coverDoc = detailBox?.selectFirst(".imgbox img")
     val coverUrl = (coverDoc?.attr("src") ?: "https://img.321cdn.com/img/01.png").toUri()
@@ -28,9 +30,9 @@ suspend fun AliceBookstoreBookInformation(
     val subTitle = detailBox?.selectFirst(".fix")?.child(3)?.text() ?: ""
     val state = detailBox?.selectFirst(".fix")?.child(5)?.text() ?: ""
     val wordCountText = detailBox?.selectFirst(".fix")?.child(4)?.text() ?: ""
-    val wordCount =
-        Regex("字数：(\\S+)").find(wordCountText)?.groupValues?.get(1)?.removeSuffix("万")
-            ?.toFloatOrNull()?.times(10000)?.toInt() ?: 0
+    infoLog(wordCountText)
+    val wordCount = Regex("字数：(\\S+)").find(wordCountText)?.groupValues?.get(1)?.replace(",", "")
+        ?.removeSuffix("万")?.toFloatOrNull()?.times(10000)?.toInt() ?: 0
 
     return MutableBookInformation(
         id = id,

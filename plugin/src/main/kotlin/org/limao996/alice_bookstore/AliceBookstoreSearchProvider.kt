@@ -70,9 +70,9 @@ object AliceBookstoreSearchProvider : SearchProvider {
 
                 val infoText = item.selectFirst(".mb-1")?.text() ?: ""
                 val wordCount =
-                    Regex("字数：(\\S+)").find(infoText)?.groupValues?.get(1)?.removeSuffix("万")
-                        ?.replace(",", "")
-                        ?.toFloatOrNull()?.times(10000)?.toInt() ?: 0
+                    Regex("字数：(\\S+)").find(infoText)?.groupValues?.get(1)?.replace(",", "")
+                        ?.removeSuffix("万")?.replace(",", "")?.toFloatOrNull()?.times(10000)
+                        ?.toInt() ?: 0
                 val timeText = item.child(4)?.text() ?: ""
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
                 val updateTime =
