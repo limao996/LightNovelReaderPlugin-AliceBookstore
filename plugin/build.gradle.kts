@@ -66,17 +66,16 @@ dependencies {
     compileOnly(libs.androidx.foundation.layout)
     compileOnly(platform(libs.compose.bom))
     compileOnly(libs.compose.material3)
+    compileOnly(libs.lightnovelreader.api)
+    compileOnly(libs.kotlinx.serialization.cbor)
+    compileOnly(libs.kotlinx.serialization.json)
+    compileOnly(libs.cxhttp)
+    compileOnly(libs.okhttp3.okhttp)
+    compileOnly(libs.okhttp3.logging.interceptor)
+    compileOnly(libs.jsoup)
 
     // 插件依赖
-    implementation(libs.kotlinx.serialization.cbor)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.cxhttp)
-    implementation(libs.okhttp3.okhttp)
-    implementation(libs.okhttp3.logging.interceptor)
-    implementation(libs.jsoup)
 
-    //LNR Api
-    implementation(libs.lightnovelreader.api)
 }
 
 val debugHostPkg = "indi.dmzz_yyhyy.lightnovelreader.debug"
@@ -84,9 +83,7 @@ val releaseHostPkg = "indi.dmzz_yyhyy.lightnovelreader"
 
 
 fun pluginApk(): File =
-    File(layout.buildDirectory.asFile.get(), "outputs/apk/debug")
-        .walkTopDown()
-        .first {
+    File(layout.buildDirectory.asFile.get(), "outputs/apk/debug").walkTopDown().first {
             it.isFile && it.name.endsWith(".apk") || it.name.endsWith(".lnrp")
         }
 
@@ -96,13 +93,13 @@ fun installPluginTask(name: String, hostPkg: String) {
         dependsOn("assembleDebug")
 
         doLast {
-            val adb = listOf(androidComponents.sdkComponents.adb.get().asFile.absolutePath) +
-                    (System.getenv("ANDROID_SERIAL")?.let { listOf("-s", it) } ?: emptyList())
+            val adb =
+                listOf(androidComponents.sdkComponents.adb.get().asFile.absolutePath) + (System.getenv(
+                    "ANDROID_SERIAL"
+                )?.let { listOf("-s", it) } ?: emptyList())
             val src = pluginApk()
-            val file =
-                if (src.name.endsWith(".apk")) src
-                else File(src.parent, src.name.removeSuffix(".lnrp"))
-                    .also { src.renameTo(it) }
+            val file = if (src.name.endsWith(".apk")) src
+            else File(src.parent, src.name.removeSuffix(".lnrp")).also { src.renameTo(it) }
 
             try {
                 providers.exec {
@@ -119,8 +116,13 @@ fun installPluginTask(name: String, hostPkg: String) {
             providers.exec {
                 commandLine(
                     adb + listOf(
-                        "shell", "monkey", "-p", hostPkg, "-c",
-                        "android.intent.category.LAUNCHER", "1"
+                        "shell",
+                        "monkey",
+                        "-p",
+                        hostPkg,
+                        "-c",
+                        "android.intent.category.LAUNCHER",
+                        "1"
                     )
                 )
             }.result.get()
