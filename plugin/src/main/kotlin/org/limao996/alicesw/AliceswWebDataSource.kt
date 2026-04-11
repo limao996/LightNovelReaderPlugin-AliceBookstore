@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.limao996.alicesw.explore.AliceBookstoreExplorePageProvider
+import org.limao996.alicesw.explore.AliceswExplorePageProvider
 import org.limao996.alicesw.utils.KotlinSerializationCborConverter
 import org.limao996.alicesw.utils.UserAgentGenerator
 
@@ -89,7 +89,7 @@ class AliceswWebDataSource(
         }
     }
 
-    override val explorePageProvider = AliceBookstoreExplorePageProvider
+    override val explorePageProvider = AliceswExplorePageProvider
 
     override val searchProvider = AliceswSearchProvider
 

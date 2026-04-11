@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import org.limao996.alicesw.explore.AliceBookstoreExplorePageProvider.categories
+import org.limao996.alicesw.explore.AliceswExplorePageProvider.categories
 import kotlin.collections.emptyList
 
 class CustomExploreTapPageDataSource(

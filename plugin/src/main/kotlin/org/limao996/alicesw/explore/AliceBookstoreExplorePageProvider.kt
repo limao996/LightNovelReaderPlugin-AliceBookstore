@@ -22,7 +22,7 @@ data class ExploreCategory(
     }
 }
 
-object AliceBookstoreExplorePageProvider : ExplorePageProvider.DefaultExplorePageProvider {
+object AliceswExplorePageProvider : ExplorePageProvider.DefaultExplorePageProvider {
     val categories = listOf(
         ExploreCategory( // 索引 0
             name = "🕹️ 原创精选",
